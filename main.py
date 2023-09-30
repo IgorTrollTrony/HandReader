@@ -31,16 +31,17 @@ for linha, linha_html in enumerate(linhas, start=1):
     for tag, atributos in re.findall(r'<(/?\w+)([^>]*)>', linha_html):
       if '/' not in tag:
         if not tag.endswith('/'):
-          print(f"Tag de abertura : {tag} | Nível: {nivel} | Linha: {linha}")
+          print(f"Tag de abertura   : {tag.ljust(9)} | Nível: {nivel} | Linha: {linha}")
           if not tag.lower() in ['br', 'img', 'h']:
             tags_abertura.append(tag)
-            nivel += 1  # Aumenta o nível
+            nivel += 1  
       else:
         tag_fechamento = tag[1:]
         if tags_abertura and tags_abertura[-1] == tag_fechamento:
-          nivel -= 1 # Diminui o nível
-          tags_fechamento.append("Tag de fechamento : "+str(tag_fechamento) +" "+"| Nivel : "+ str(nivel)+"| Linha: "+str(linha))
+          nivel -= 1
+          tags_fechamento.append("Tag de fechamento : "+str(tag_fechamento.ljust(9)) +" "+"| Nivel : "+ str(nivel)+"| Linha: "+str(linha))
           tags_abertura.pop()
-print("")
+print("----------------------------------------------------")
 for tag in tags_fechamento:
   print(tag)
+
