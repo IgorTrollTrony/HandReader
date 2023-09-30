@@ -73,20 +73,19 @@ for linha, linha_html in enumerate(linhas, start=1):
       atributos_str = re.findall(r'(\w+)="([^"]*)"', atributos_str)
       for atributo, valor in atributos_str:
         atributos[tag] = atributos.get(tag, {})
-        atributos[tag][atributo] = valor
-
-print("----------------------------------------------------")
+        atributos[tag][atributo] = (valor, linha) 
+print("")
 for tag in tags_fechamento:
   print(tag)
 print("----------------------------------------------------")
 print('\033[1m' + "Atributos de cada tag" + '\033[0m')
 print("----------------------------------------------------")
 for tag, atributo_valor in atributos.items():
-  print(f"Tag: {tag}\n")
-  for atributo, valor in atributo_valor.items():
-    print(f"  • Atributo: {atributo}")
-    print(f"  • Valor do Atributo: {valor}\n")
-  print("")
+    print(f"Tag: {tag}\n")
+    for atributo, (valor, linha_atributo) in atributo_valor.items():
+        print(f"•Atributo: {atributo.ljust(18)} | Linha: {linha_atributo}")
+        print(f"•Valor do Atributo: {valor}\n")
+    print("")
 
 style_tag = re.search(r'<style>(.*?)</style>', entrada_html, re.DOTALL)
 if style_tag:
@@ -104,3 +103,4 @@ if style_tag:
       print(f"  • Atributo: {property_name.strip()}")
       print(f"  • Valor do Atributo: {property_value.strip()}\n")
 
+#identificaçao de qual linha o atributo esta e justificamento da saida
