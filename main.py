@@ -26,21 +26,21 @@ tags = re.findall(r'<(/?\w+)([^>]*)>', entrada_html)
 tags_abertura = []
 tags_fechamento = []
 nivel = 0
-for tag, atributos in tags:
-  if '/' not in tag:
-    if not tag.endswith('/'):
-      print(f"Tag de abertura: {tag}, Nível: {nivel}")
-      if not tag.lower() in ['br', 'img', 'h']:
-        tags_abertura.append(tag)
-        nivel += 1
-  else:
-    tag_fechamento = tag[1:]
-    if tags_abertura and tags_abertura[-1] == tag_fechamento:
-      nivel -= 1
-      tags_fechamento.append("Tag de fechamento : "+str(tag_fechamento) +" "+"Nivel : "+ str(nivel))
-      tags_abertura.pop()
+linhas = entrada_html.splitlines()
+for linha, linha_html in enumerate(linhas, start=1):
+    for tag, atributos in re.findall(r'<(/?\w+)([^>]*)>', linha_html):
+      if '/' not in tag:
+        if not tag.endswith('/'):
+          print(f"Tag de abertura : {tag} | Nível: {nivel} | Linha: {linha}")
+          if not tag.lower() in ['br', 'img', 'h']:
+            tags_abertura.append(tag)
+            nivel += 1  # Aumenta o nível
+      else:
+        tag_fechamento = tag[1:]
+        if tags_abertura and tags_abertura[-1] == tag_fechamento:
+          nivel -= 1 # Diminui o nível
+          tags_fechamento.append("Tag de fechamento : "+str(tag_fechamento) +" "+"| Nivel : "+ str(nivel)+"| Linha: "+str(linha))
+          tags_abertura.pop()
 print("")
 for tag in tags_fechamento:
   print(tag)
-
-#Organizaçao da saida de resultados
