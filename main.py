@@ -69,6 +69,7 @@ entrada_html = """<!DOCTYPE html>
 <body>
     <header>
         <h1>Meu Site</h1>
+        <h1>Meu Site2</h1>
     </header>
     <nav>
         <ul>
@@ -112,15 +113,16 @@ atributos = {}
 # Encontre o DOCTYPE
 doctype_match = re.search(r'<!DOCTYPE\s+([^>]+)>', entrada_html)
 if doctype_match:
-    print("----------------------------------------------------")
-    doctype = doctype_match.group(1)
-    print(f"DOCTYPE: {doctype.strip()}")
+  print("----------------------------------------------------")
+  doctype = doctype_match.group(1)
+  print(f"DOCTYPE: {doctype.strip()}")
 
 # Encontre a declaração de codificação UTF
-encoding_match = re.search(r'<meta\s+charset=["\']?([^"\']+)["\']?\s*/?>', entrada_html)
+encoding_match = re.search(r'<meta\s+charset=["\']?([^"\']+)["\']?\s*/?>',
+                           entrada_html)
 if encoding_match:
-    encoding = encoding_match.group(1)
-    print(f"Codificação UTF: {encoding.strip()}")
+  encoding = encoding_match.group(1)
+  print(f"Codificação UTF: {encoding.strip()}")
 
 print("----------------------------------------------------")
 print('\033[1m' + "Tags de abertura e fechamento\n" + '\033[0m')
@@ -132,7 +134,7 @@ for linha, linha_html in enumerate(linhas, start=1):
         print(
             f"Tag de abertura   : {tag.ljust(9)} | Nível: {nivel} | Linha: {linha}"
         )
-        if not tag.lower() in ['br', 'img', 'h']:
+        if not tag.lower() in ['br', 'img', 'h','input','meta']:
           tags_abertura.append(tag)
           nivel += 1
     else:
@@ -149,19 +151,37 @@ for linha, linha_html in enumerate(linhas, start=1):
       atributos_str = re.findall(r'(\w+)="([^"]*)"', atributos_str)
       for atributo, valor in atributos_str:
         atributos[tag] = atributos.get(tag, {})
-        atributos[tag][atributo] = (valor, linha) 
+        atributos[tag][atributo] = (valor, linha)
 print("")
 for tag in tags_fechamento:
   print(tag)
 print("----------------------------------------------------")
+print('\033[1m' + "Contudo de tags de texto" + '\033[0m')
+print("----------------------------------------------------")
+# Lista de tags que podem ter texto dentro
+tags_com_texto = [
+    "p", "h1", "h2", "h3", "h4", "span", "a", "strong", "b", "em", "i", "u",
+    "s", "del", "ins", "mark", "abbr", "cite", "code", "pre"
+]
+
+# Divida o HTML em linhas
+linhas = entrada_html.splitlines()
+for linha_numero, linha in enumerate(linhas, start=1):
+  for tag in tags_com_texto:
+    regex = f'<{tag}[^>]*>(.*?)</{tag}>'
+    tags_encontradas = re.findall(regex, linha, re.DOTALL)
+    for conteudo in tags_encontradas:
+      print(f"Tag: {tag.ljust(15)} | Linha:{str(linha_numero)}\n")
+      print(f"Conteúdo: {conteudo.strip()}\n\n")
+print("----------------------------------------------------")
 print('\033[1m' + "Atributos de cada tag" + '\033[0m')
 print("----------------------------------------------------")
 for tag, atributo_valor in atributos.items():
-    print(f"Tag: {tag}\n")
-    for atributo, (valor, linha_atributo) in atributo_valor.items():
-        print(f"•Atributo: {atributo.ljust(18)} | Linha: {linha_atributo}")
-        print(f"•Valor do Atributo: {valor}\n")
-    print("")
+  print(f"Tag: {tag}\n")
+  for atributo, (valor, linha_atributo) in atributo_valor.items():
+    print(f"•Atributo: {atributo.ljust(18)} | Linha: {linha_atributo}")
+    print(f"•Valor do Atributo: {valor}\n")
+  print("")
 
 style_tag = re.search(r'<style>(.*?)</style>', entrada_html, re.DOTALL)
 if style_tag:
@@ -178,3 +198,5 @@ if style_tag:
     for property_name, property_value in css_properties:
       print(f"  • Atributo: {property_name.strip()}")
       print(f"  • Valor do Atributo: {property_value.strip()}\n")
+
+#
