@@ -1,99 +1,13 @@
 import re
 
-entrada_html = """<!DOCTYPE html>
-<html lang="pt-BR">
+entrada_html = """<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exemplo de HTML e CSS</title>
-    <style>
-        /* Estilos para o corpo da página */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Estilos para o cabeçalho */
-        header {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 20px;
-        }
-
-        /* Estilos para as divs */
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-
-        /* Estilos para os botões */
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 3px;
-        }
-
-        /* Estilos para links */
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        /* Estilos para a barra de navegação */
-        nav {
-            background-color: #333;
-            color: #fff;
-            padding: 10px;
-        }
-
-        /* Estilos para rodapé */
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 10px;
-        }
-    </style>
-</head>
+   <title>replit</title>
+ </head>
 <body>
-    <header>
-        <h1>Meu Site</h1>
-        <h1>Meu Site2</h1>
-    </header>
-    <nav>
-        <ul>
-            <li><a href="#">Página Inicial</a></li>
-            <li><a href="#">Sobre Nós</a></li>
-            <li><a href="#">Contato</a></li>
-        </ul>
-    </nav>
-    <div class="container">
-        <h2>Bem-vindo ao nosso site</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla convallis libero a hendrerit. Vestibulum dapibus, justo vel fringilla vehicula, quam arcu elementum ex.</p>
-        <a href="#" class="btn">Saiba mais</a>
-    </div>
-    <div class="container">
-        <h2>Nossos Serviços</h2>
-        <ul>
-            <li>Serviço 1</li>
-            <li>Serviço 2</li>
-            <li>Serviço 3</li>
-        </ul>
-    </div>
-    <footer>
-        &copy; 2023 Meu Site
-    </footer>
+  <p>Hello world</p>
+  <h1 style="font-size:30px;">Olá, Eu sou uma página </h1>
+  <div id="teste" style="color:black;">Unipinhal</div>
 </body>
 </html>
 
@@ -199,4 +113,3 @@ if style_tag:
       print(f"  • Atributo: {property_name.strip()}")
       print(f"  • Valor do Atributo: {property_value.strip()}\n")
 
-#
