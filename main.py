@@ -25,10 +25,13 @@ entrada_html = """
   </head>
   <body> 
     <p style="color:red;background:blue" id="abc"> Unipinhal </p>
+    <br>
     <div style="color: red;background:blue; width: 300px; height: 50px;" id="abc"> asdadada </div>
-    <div style="color: red;background:blue; width: 200px; height: 200px;" id="abc"> asdadada </div>
-    <br></br>
-    <p style="color:red;background:blue" id="abc"> Unipinhal </p>
+    <br>
+    <div style="color: red;background:blue; width: 200px; height: 200px;" id="abc">  
+      <p style="color:red;background:blue" id="abc"> Unipinhal </p> 
+    </div>
+    <br>
   </body>
 </html>
 """
@@ -87,8 +90,11 @@ def processar_html_pygame(html, espacamento_horizontal, espacamento_vertical):
 
             cor = estilo_dict.get('color', 'black')
             cor_texto = pygame.Color(cor)
-            texto = fonte.render(conteudo, True, cor_texto)
-            janela.blit(texto, (x, y))
+
+            # Se a tag for <p> ou <div>, renderize o conteúdo dentro da div
+            if tag.lower() == 'p' or tag.lower() == 'div':
+                texto = fonte.render(conteudo, True, cor_texto)
+                janela.blit(texto, (x, y))
 
             altura_div_anterior = tamanho_elemento[1]
             y += altura_div_anterior + espacamento_vertical  # Adiciona espaçamento vertical após a div
