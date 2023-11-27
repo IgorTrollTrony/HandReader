@@ -1,112 +1,171 @@
-# Importa as bibliotecas necessárias
-import pygame  # Biblioteca para desenvolvimento de jogos em Python
-import re  # Módulo para trabalhar com expressões regulares
+class TreeNode:
+  def __init__(self, key):
+      self.key = key
+      self.left = None
+      self.right = None
 
-# Função para extrair o estilo de uma string CSS e retornar um dicionário
-def extrair_estilo(style):
-    estilo = {}
-    # Itera sobre as propriedades de estilo separadas por ';'
-    for prop in style.split(';'):
-        prop = prop.strip()
-        if prop:
-            # Divide a propriedade em nome e valor e armazena no dicionário
-            nome, valor = prop.split(':')
-            estilo[nome.strip()] = valor.strip()
-    return estilo
+class BinaryTree:
+  def __init__(self):
+      self.root = None
 
-# Função para extrair a largura e altura de um dicionário de estilo
-def extrair_largura_e_altura(estilo):
-    largura = estilo.get('width', '')
-    altura = estilo.get('height', '')
-    return largura, altura
+  def inserir(self, chave):
+      self.root = self._inserir(self.root, chave)
 
-# Função principal para processar o HTML e exibir o conteúdo no Pygame
-def processar_html_pygame(html, espacamento_horizontal, espacamento_vertical):
-    # Inicializa o Pygame
-    pygame.init()
+  def _inserir(self, raiz, chave):
+      if raiz is None:
+          return TreeNode(chave)
+      if chave < raiz.key:
+          raiz.left = self._inserir(raiz.left, chave)
+      elif chave > raiz.key:
+          raiz.right = self._inserir(raiz.right, chave)
+      return raiz
 
-    # Configuração da janela
-    largura = 800
-    altura = 600
-    janela = pygame.display.set_mode((largura, altura))
-    pygame.display.set_caption("Navegador Web")
-    fonte = pygame.font.Font(None, 36)
+  def adicionar_no(self, chave_pai, chave_novo_no, posicao):
+      pai = self._buscar(self.root, chave_pai)
+      if pai:
+          if posicao == 'esquerda' and pai.left is None:
+              pai.left = TreeNode(chave_novo_no)
+          elif posicao == 'direita' and pai.right is None:
+              pai.right = TreeNode(chave_novo_no)
+          else:
+              print(f"Erro: posição inválida ou nó já existe em {posicao} para o pai {chave_pai}")
+      else:
+          print(f"Erro: Pai {chave_pai} não encontrado")
 
-    # Encontra todas as tags com estilo no HTML usando expressões regulares
-    tags_com_estilo = re.findall(r'<([a-zA-Z0-9]+)[^>]*style="([^"]+)"[^>]*>(.*?)</?\1>|<br[^>]*>', html)
+  def excluir(self, chave):
+      self.root = self._excluir(self.root, chave)
 
-    # Loop principal do Pygame
-    executando = True
-    while executando:
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                executando = False
+  def _excluir(self, raiz, chave):
+      if raiz is None:
+          return raiz
+      if chave < raiz.key:
+          raiz.left = self._excluir(raiz.left, chave)
+      elif chave > raiz.key:
+          raiz.right = self._excluir(raiz.right, chave)
+      else:
+          # Caso 1: Nó com no máximo um filho
+          if raiz.left is None:
+              return raiz.right
+          elif raiz.right is None:
+              return raiz.left
 
-        # Preenche a janela com branco
-        janela.fill((255, 255, 255))
+          # Caso 2: Nó com dois filhos, encontrar o sucessor in-order
+          raiz.key = self._min_value_node(raiz.right).key
+          raiz.right = self._excluir(raiz.right, raiz.key)
 
-        y = 0
+      return raiz
 
-        # Loop através de todas as tags com estilo
-        for tag, estilo, conteudo in tags_com_estilo:
-            x = espacamento_horizontal
-            estilo_dict = extrair_estilo(estilo)
+  def buscar(self, chave):
+      return self._buscar(self.root, chave)
 
-            # Verifica se a tag é <br> (quebra de linha)
-            if tag.lower() == 'br':
-                largura, altura = '200px', '200px'
-            else:
-                largura, altura = extrair_largura_e_altura(estilo_dict)
+  def _buscar(self, raiz, chave):
+      if raiz is None or raiz.key == chave:
+          return raiz
+      if chave < raiz.key:
+          return self._buscar(raiz.left, chave)
+      return self._buscar(raiz.right, chave)
 
-            # Verifica se largura e altura não estão vazias
-            if largura and altura:
-                tamanho_elemento = (int(largura.rstrip('px')), int(altura.rstrip('px')))
-            else:
-                # Se não houver largura e altura especificadas, usa o tamanho do texto
-                tamanho_texto = fonte.size(conteudo)
-                tamanho_elemento = tamanho_texto
+  def _min_value_node(self, no):
+      atual = no
+      while atual.left is not None:
+          atual = atual.left
+      return atual
 
-            # Renderiza o fundo com base no tamanho do elemento
-            cor_de_fundo = pygame.Color(estilo_dict.get('background', 'white'))
-            fundo = pygame.Surface(tamanho_elemento)
-            fundo.fill(cor_de_fundo)
-            janela.blit(fundo, (x, y))
+  def travessia_em_ordem(self):
+      resultado = []
+      self._travessia_em_ordem(self.root, resultado)
+      return resultado
 
-            # Renderiza o texto na janela
-            cor = estilo_dict.get('color', 'black')
-            cor_texto = pygame.Color(cor)
-            texto = fonte.render(conteudo, True, cor_texto)
-            janela.blit(texto, (x, y))
+  def _travessia_em_ordem(self, raiz, resultado):
+      if raiz:
+          self._travessia_em_ordem(raiz.left, resultado)
+          resultado.append(raiz.key)
+          self._travessia_em_ordem(raiz.right, resultado)
 
-            # Atualiza a posição y considerando o tamanho do elemento e o espaçamento vertical
-            y += tamanho_elemento[1] + espacamento_vertical
+  def travessia_pre_ordem(self):
+      resultado = []
+      self._travessia_pre_ordem(self.root, resultado)
+      return resultado
 
-        # Atualiza a janela do Pygame
-        pygame.display.update()
+  def _travessia_pre_ordem(self, raiz, resultado):
+      if raiz:
+          resultado.append(raiz.key)
+          self._travessia_pre_ordem(raiz.left, resultado)
+          self._travessia_pre_ordem(raiz.right, resultado)
 
-    # Finaliza o Pygame
-    pygame.quit()
+  def travessia_pos_ordem(self):
+      resultado = []
+      self._travessia_pos_ordem(self.root, resultado)
+      return resultado
 
-# HTML de entrada
-entrada_html = """
-<html> 
-  <head>
-    <title> Compiladores </title>
-  </head>
-  <body> 
-    <p style="color:White;background:Black" id="abc"> Bem vindo </p>
-    <br>
-    <div style="color: white;background:Black; width: 1920px; height: 50px;" id="abc"> Mini Compilador </div>
-    <div style="color: red;background:blue; width: 250px; height: 200px;" id="abc"> apresentação teste </div>
-    <br>
-    <p style="color:White;background:Black" id="abc"> Unipinhal </p>
-  </body>
-</html>
-"""
+  def _travessia_pos_ordem(self, raiz, resultado):
+      if raiz:
+          self._travessia_pos_ordem(raiz.left, resultado)
+          self._travessia_pos_ordem(raiz.right, resultado)
+          resultado.append(raiz.key)
 
-# Parâmetros para espaçamento horizontal e vertical
-espacamento_horizontal = 20
-espacamento_vertical = 0
+  def altura_arvore(self):
+      return self._altura_arvore(self.root)
 
-# Chama a função principal para processar o HTML e exibir o conteúdo
-processar_html_pygame(entrada_html, espacamento_horizontal, espacamento_vertical)
+  def _altura_arvore(self, raiz):
+      if raiz is None:
+          return 0
+      altura_esquerda = self._altura_arvore(raiz.left)
+      altura_direita = self._altura_arvore(raiz.right)
+      return max(altura_esquerda, altura_direita) + 1
+
+  def profundidade_no(self, chave):
+      return self._profundidade_no(self.root, chave, 0)
+
+  def _profundidade_no(self, raiz, chave, profundidade):
+      if raiz is None:
+          return -1
+      if raiz.key == chave:
+          return profundidade
+      profundidade_esquerda = self._profundidade_no(raiz.left, chave, profundidade + 1)
+      profundidade_direita = self._profundidade_no(raiz.right, chave, profundidade + 1)
+      if profundidade_esquerda != -1:
+          return profundidade_esquerda
+      return profundidade_direita
+
+  def contar_nos(self):
+      return self._contar_nos(self.root)
+
+  def _contar_nos(self, raiz):
+      if raiz is None:
+          return 0
+      return 1 + self._contar_nos(raiz.left) + self._contar_nos(raiz.right)
+
+# Exemplo de uso:
+arvore = BinaryTree()
+arvore.inserir(50)
+arvore.inserir(30)
+arvore.inserir(70)
+arvore.inserir(20)
+arvore.inserir(40)
+arvore.inserir(60)
+arvore.inserir(80)
+
+print("Travessia em Ordem:", arvore.travessia_em_ordem())
+print("Travessia Pré-Ordem:", arvore.travessia_pre_ordem())
+print("Travessia Pós-Ordem:", arvore.travessia_pos_ordem())
+
+no_a_excluir = 30
+print(f"Excluindo nó com chave {no_a_excluir}")
+arvore.excluir(no_a_excluir)
+print("Travessia em Ordem após exclusão:", arvore.travessia_em_ordem())
+
+chave_a_buscar = 60
+print(f"Buscando nó com chave {chave_a_buscar}: {arvore.buscar(chave_a_buscar) is not None}")
+
+print("Altura da Árvore:", arvore.altura_arvore())
+
+chave_profundidade = 40
+print(f"Profundidade do nó com chave {chave_profundidade}: {arvore.profundidade_no(chave_profundidade)}")
+
+print("Número de nós na árvore:", arvore.contar_nos())
+# Adicionando um novo nó à esquerda do nó com a chave 60
+arvore.adicionar_no(60, 55, 'esquerda')
+
+# Exibindo a travessia em ordem após adição do novo nó
+print("Travessia em Ordem após adição de novo nó:", arvore.travessia_em_ordem())
